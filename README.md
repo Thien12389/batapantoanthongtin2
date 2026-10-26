@@ -34,16 +34,18 @@
 
 ### 2. Số liệu thực nghiệm và Kết quả
 - **Khóa & IV khởi tạo:**
-  - `Key (Base64)`: `kSnQ/NIpeOURDzjjcefge28dgp+MQ0i5McyZAE5l2bI=`
-  - `IV (Base64)`: `quXXudVX5b1Ro+CImQGtFQ==`
+  - `Key (Base64)`: `qBSV1pW18Pncm+8MAdULERT1pNiRnscYwHLGECCfqC0=`
+  - `IV (Base64)`: `4xF7jhpg8lQn100YSS5zUw==`
+- **Lưu & Import Khóa từ File:**
+  - Đã lưu khóa AES-256 (32 bytes) ra file `aes_key.bin` và IV (16 bytes) ra file `aes_iv.bin`.
+  - Import đọc lại chính xác 32 bytes Key và 16 bytes IV từ đĩa để thực thi mã hóa.
 - **Mã hóa văn bản rõ:** `"Xin chao K59KMT - An toan bao mat thong tin"`
-  - `Kết quả Mã hóa (Base64)`: `FyKr3bwyaX+S8yTA2mmD0BLrVpnp66W+oV5+S2ThSCU+tNskDIhj3lIXTYkVMGM5`
-  - `Kết quả Giải mã`: Khôi phục chính xác $100\%$ văn bản gốc.
+  - `Kết quả Mã hóa (Base64)`: `E98r2SDwUmUGLRf6u8okY0XiPkiB541rHUDN2UT1KIDMshNZzbBGEp+vvG9DW9My`
+  - `Kết quả Giải mã`: Khôi phục chính xác 100% văn bản gốc.
 - **Thử nghiệm Tệp tin dung lượng lớn (1024 MB / 1 GB):**
-  - **Thời gian Mã hóa:** 36543 ms (Tốc độ: 28,0 MB/s)
-  - **Thời gian Giải mã:** 9901 ms (Tốc độ: 103,4 MB/s)
+  - **Thời gian Mã hóa:** 2118 ms (Tốc độ: 483,4 MB/s)
+  - **Thời gian Giải mã:** 3963 ms (Tốc độ: 258,3 MB/s)
   - **So sánh Byte (Byte-by-byte comparison):** Quét đối chiếu từng byte giữa file nguồn gốc 1 GB và file thu được sau giải mã -> Kết quả: **KHÓP HOÀN TOÀN (100%)**.
-
 ### 3. Đánh giá và Nhận xét
 - **Bảo toàn dữ liệu:** Tiến trình mã hóa và giải mã bảo toàn tính toàn vẹn tuyệt đối của tệp tin, không thất thoát bất kỳ bit dữ liệu nào.
 - **Hiệu năng vượt trội:** Nhờ sự hỗ trợ từ phần cứng (tập lệnh AES-NI trên CPU) và cơ chế Stream buffer, việc giải mã đạt tốc độ rất cao ($\approx 521.7\text{ MB/s}$).
@@ -51,7 +53,8 @@
 
 > **Minh chứng chạy thực tế - Bài 1:**
 >
-> <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e4cc2ee4-0dcb-436e-b447-d0206d2c10ab" />
+> <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a50163f3-4827-40a9-8720-f67604254796" />
+
 
 
 

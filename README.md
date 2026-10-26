@@ -6,7 +6,7 @@
 - **Lớp:** K59KMT
 
 **THÔNG TIN DỰ ÁN:**
-- **Ngôn ngữ lập trình:** C# (.NET)
+- **Ngôn ngữ lập trình:** C# (.NET 6.0 / .NET 8.0)
 - **Môi trường phát triển:** Visual Studio 2022 (Console Application)
 - **Thư viện sử dụng:** `System.Security.Cryptography`, `System.IO`, `System.Diagnostics`, `System.Text`
 
@@ -28,7 +28,7 @@
 
 ### 1. Mô tả giải pháp kỹ thuật
 - **Thuật toán mã hóa:** AES-256 bit ở chế độ CBC (Cipher Block Chaining) với chuẩn đệm PKCS7.
-- **Khởi tạo khóa:** Hệ thống tự động sinh ngẫu nhiên Khóa (Key 256-bit) và Vectơ khởi tạo (IV 128-bit) bằng lớp `Aes.Create()`.
+- **Khởi tạo & Lưu/Import Khóa:** Sinh khóa AES-256 bit ($32\text{ bytes}$) và IV ($16\text{ bytes}$) ngẫu nhiên. Lưu khóa ra tệp tin nhị phân `aes_key.bin` và `aes_iv.bin`, sau đó import nạp lại từ đĩa để thực thi mã hóa.
 - **Mã hóa/Giải mã văn bản:** Chuyển đổi chuỗi rõ thành mảng byte, thực thi qua `CryptoStream` và xuất kết quả mã hóa dưới dạng chuỗi Base64.
 - **Xử lý Tệp tin dung lượng lớn (Hàng GB):** Áp dụng kỹ thuật đọc/ghi luồng theo khối buffer ($1\text{ MB}$) thông qua `CryptoStream` và `FileStream`. Giải pháp này đảm bảo việc xử lý các tệp tin kích thước $1\text{ GB}$ (hoặc lớn hơn) diễn ra mượt mà, không bị tràn bộ nhớ RAM.
 
@@ -46,17 +46,15 @@
   - **Thời gian Mã hóa:** 2118 ms (Tốc độ: 483,4 MB/s)
   - **Thời gian Giải mã:** 3963 ms (Tốc độ: 258,3 MB/s)
   - **So sánh Byte (Byte-by-byte comparison):** Quét đối chiếu từng byte giữa file nguồn gốc 1 GB và file thu được sau giải mã -> Kết quả: **KHÓP HOÀN TOÀN (100%)**.
+
 ### 3. Đánh giá và Nhận xét
 - **Bảo toàn dữ liệu:** Tiến trình mã hóa và giải mã bảo toàn tính toàn vẹn tuyệt đối của tệp tin, không thất thoát bất kỳ bit dữ liệu nào.
-- **Hiệu năng vượt trội:** Nhờ sự hỗ trợ từ phần cứng (tập lệnh AES-NI trên CPU) và cơ chế Stream buffer, việc giải mã đạt tốc độ rất cao ($\approx 521.7\text{ MB/s}$).
-- **Bộ nhớ:** Mức sử dụng RAM duy trì ổn định ở mức thấp trong suốt quá trình xử lý file $1\text{ GB}$.
+- **Phân tích hiệu năng:** Mã hóa $1\text{ GB}$ mất $2118\text{ ms}$ ($483,4\text{ MB/s}$), giải mã mất $3963\text{ ms}$ ($258,3\text{ MB/s}$), so sánh byte khớp hoàn toàn $100\%$. Ứng dụng chạy ở cấu hình Debug trong Visual Studio nên các chỉ số đo đạc phụ thuộc vào việc tối ưu hóa bộ nhớ tạm thời của hệ thống.
+- **Bộ nhớ:** Mức sử dụng RAM duy trì ổn định ở mức thấp trong suốt quá trình xử lý file $1\text{ GB}$ nhờ cơ chế Stream Buffer.
 
 > **Minh chứng chạy thực tế - Bài 1:**
 >
 > <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a50163f3-4827-40a9-8720-f67604254796" />
-
-
-
 
 ---
 
@@ -84,19 +82,17 @@ Chương trình import tệp PEM và hiển thị đầy đủ các thành phầ
 ### 4. Mã hóa & Giải mã RSA với giới hạn kích thước ($\le 190\text{ bytes}$)
 - **Cơ chế đệm:** Sử dụng chuẩn RSA-OAEP với hàm băm SHA-256 (`RSAEncryptionPadding.OaepSHA256`).
 - **Giới hạn lý thuyết:** Khóa RSA $2048\text{-bit}$ ($256\text{ bytes}$) khi kết hợp OAEP-SHA256 chỉ mã hóa được dữ liệu ngõ vào tối đa: $256 - 2 \times 32 - 2 = 190\text{ bytes}$.
-- **Thực nghiệm:** Tiến hành mã hóa $32\text{ bytes}$ khóa đối xứng AES-256 (`71GVleL1B+qGEhWZoq9BwU...`). Dữ liệu sau giải mã hoàn toàn trùng khớp $100\%$ với dữ liệu nguồn ban đầu.
+- **Thực nghiệm:** Tiến hành mã hóa $32\text{ bytes}$ khóa đối xứng AES-256. Dữ liệu sau giải mã hoàn toàn trùng khớp $100\%$ với dữ liệu nguồn ban đầu.
 
 ### 5. Đánh giá tốc độ xử lý: Public Key ($e$ nhỏ) vs Private Key ($d$ lớn)
 Thực hiện đo đạc thời gian trung bình qua 50 vòng lặp xử lý:
 - **Tốc độ Mã hóa (Public Key - $e = 65537$):** $\approx 0.223\text{ ms / lần}$
-- **Tốc độ Giải mã (Private Key - $d$ lớn):** $\approx 1.239\text{ ms / lần}$
-- **Kết luận:** Phép tính giải mã sử dụng Private Key chậm hơn phép mã hóa sử dụng Public Key khoảng **$5.6\text{ lần}$**. 
-  - *Giải thích nguyên lý:* Do $e = 65537$ có biểu diễn nhị phân rất ngắn (chỉ chứa hai bit 1), phép toán lũy thừa modulo $C = M^e \bmod n$ diễn ra cực nhanh. Trong khi đó, $d$ có kích thước tương đương Modulus $n$ ($2048\text{-bit}$), đòi hỏi phép toán $M = C^d \bmod n$ tiêu tốn nhiều vòng lặp tính toán hơn trên CPU.
+- **Tốc độ Giải mã (Private Key):** $\approx 1.239\text{ ms / lần}$
+- **Kết luận:** Tỷ lệ giải mã dùng Private Key chậm hơn mã hóa dùng Public Key khoảng **$5.6\text{ lần}$**. 
+  - *Giải thích nguyên lý:* Tỷ lệ $5.6\text{ lần}$ là hoàn toàn hợp lý vì trong .NET, thao tác giải mã RSA được tối ưu hóa bằng **Thuật toán Thặng dư Trung Hoa (CRT - Chinese Remainder Theorem)** dựa trên các tham số ($p, q, dp, dq, qInv$), giúp tính toán trên hai số $1024\text{-bit}$ nhỏ hơn thay vì phải tính lũy thừa trực tiếp trên toàn bộ số $d$ ($2048\text{-bit}$) lớn.
 
 ### 6. Đánh giá Hiệu ứng tuyết lở (Avalanche Effect) của SHA-256
-Thực hiện băm hai chuỗi dữ liệu đầu vào chỉ khác biệt duy nhất $1\text{ ký tự}$ cuối:
-- $\text{SHA-256}("Data123") = \text{3A8CC79F654CACC8D7CD2A53D18A87A1763076E14CA19782971CE9A72CDD626D}$
-- $\text{SHA-256}("Data124") = \text{4424083E9EB3E7537D4AE89EA11A4F109B3781ED4A6E88214014533335C1FEA6}$
+Thực hiện băm hai chuỗi dữ liệu đầu vào chỉ khác biệt duy nhất $1\text{ ký tự}$ cuối (`"Data123"` và `"Data124"`):
 - **Kết quả:** Số bit bị biến đổi giữa 2 mã băm là **$135/256\text{ bit}$** (đạt tỉ lệ **$52.7\%$**).
 - **Kết luận:** Đầu vào thay đổi cực nhỏ dẫn tới mã băm ngõ ra biến đổi hoàn toàn không theo quy luật, minh chứng rõ nét cho tính chất Hiệu ứng tuyết lở tiêu chuẩn của hàm băm mật mã ($\approx 50\%$).
 
@@ -109,11 +105,11 @@ Thực hiện băm hai chuỗi dữ liệu đầu vào chỉ khác biệt duy nh
   - **Chữ ký Lần 2:** `G8yS9SNHYTYduCRJ0pLKHnjbW3s57KWy62TEydTY...`
   - Hai chữ ký hoàn toàn khác biệt về mặt hiển thị Base64.
   - Kết quả Xác minh (**Verify**) với Public Key: **Lần 1 = True | Lần 2 = True**.
-- **Ý nghĩa bảo mật:** Giải pháp ngăn chặn triệt me các cuộc tấn công suy diễn phân tích chữ ký hoặc tấn công phát lại (Replay Attacks).
+- **Ý nghĩa bảo mật & Lưu ý Replay Attack:** PSS làm cho hai chữ ký khác nhau và cả hai đều xác thực thành công, ngăn chặn việc phân tích chữ ký tĩnh. Tuy nhiên, PSS không tự chống tấn công phát lại (Replay Attacks): nếu kẻ tấn công gửi lại đúng cặp `(văn bản, chữ ký)` hợp lệ thì bước Verify vẫn ra `True`. Muốn chống phát lại triệt để ở cấp ứng dụng, hệ thống phải bổ sung thêm **Timestamp (thời gian)** hoặc **Nonce (số ngẫu nhiên 1 lần)** vào nội dung văn bản trước khi ký.
 
 > **Minh chứng chạy thực tế - Bài 2:**
 >
-><img width="1920" height="1080" alt="Ảnh chụp màn hình 2026-10-26 173905" src="https://github.com/user-attachments/assets/c08ae3dc-56e3-4963-9369-723c5ae5ed92" />
+> <img width="1920" height="1080" alt="Ảnh chụp màn hình 2026-10-26 173905" src="https://github.com/user-attachments/assets/c08ae3dc-56e3-4963-9369-723c5ae5ed92" />
 
 ---
 
@@ -121,6 +117,6 @@ Thực hiện băm hai chuỗi dữ liệu đầu vào chỉ khác biệt duy nh
 
 Chương trình Console Application cùng báo cáo kỹ thuật đã đáp ứng **100% các yêu cầu bài tập lớn** môn An Toàn và Bảo Mật Thông Tin:
 
-1. **Về AES-256:** Làm chủ kỹ thuật đọc luồng `CryptoStream` xử lý mượt mà các tệp tin dung lượng lớn $1\text{ GB}$ với tốc độ giải mã vượt trội ($\approx 521.7\text{ MB/s}$), đảm bảo tính toàn vẹn từng byte dữ liệu.
-2. **Về RSA & SHA-256:** Trích xuất minh bạch cấu trúc byte PEM (ASN.1 DER) và các tham số đại số ($n, e, d, p, q$); đo đạc chính xác chênh lệch hiệu năng $5.6\text{ lần}$ giữa Public Key và Private Key; chứng minh tính chất tuyết lở $52.7\%$ bit biến đổi của hàm băm SHA-256.
+1. **Về AES-256:** Làm chủ kỹ thuật đọc luồng `CryptoStream` xử lý mượt mà các tệp tin dung lượng lớn $1\text{ GB}$, hỗ trợ lưu/import khóa $32\text{ bytes}$ chuẩn xác và đảm bảo tính toàn vẹn từng byte dữ liệu.
+2. **Về RSA & SHA-256:** Trích xuất minh bạch cấu trúc byte PEM (ASN.1 DER) và các tham số đại số ($n, e, d, p, q$); giải thích chính xác cơ chế tối ưu CRT cho tốc độ giải mã RSA; chứng minh tính chất tuyết lở $52.7\%$ bit biến đổi của hàm băm SHA-256.
 3. **Về Chữ ký số PSS:** Đề xuất và thực nghiệm thành công giải pháp chữ ký số động RSA-PSS đáp ứng hoàn hảo yêu cầu tình huống thực tế.

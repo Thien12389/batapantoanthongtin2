@@ -1,4 +1,4 @@
-# 🛡️ Báo Cáo Bài Tập: An Toàn và Bảo Mật Thông Tin
+#  Báo Cáo Bài Tập: An Toàn và Bảo Mật Thông Tin
 
 **THÔNG TIN SINH VIÊN:**
 - **Họ và tên:** Lê Đỗ Hoàng Thiện
@@ -17,12 +17,12 @@ Dự án này là chương trình Console Application thực hiện toàn bộ c
 
 Trong phần này, hệ thống sử dụng thuật toán AES với khóa đối xứng (Symmetric Key). Nghĩa là chung một khóa sẽ được dùng cho cả hai quy trình Mã hóa (Encryption) và Giải mã (Decryption). Quá trình thử nghiệm bao gồm: Khởi tạo tự động Key và IV (Initialization Vector), xuất khóa ra file nhị phân (`.bin`), nạp lại khóa và thực thi với các luồng dữ liệu lớn.
 
-### 📊 Đánh giá và Kết luận thực tiễn:
+###  Đánh giá và Kết luận thực tiễn:
 - **Khả năng xử lý file dung lượng lớn:** Thuật toán AES thể hiện sức mạnh mã hóa khối vượt trội. Khi kết hợp cùng thư viện `CryptoStream` của .NET để đọc ghi theo dạng luồng (chunking), chương trình có thể mã hóa các tệp có kích thước hàng GB mà không gây tràn bộ nhớ (RAM). Thời gian xử lý cho tệp thử nghiệm lớn vô cùng ấn tượng, thường chỉ hoàn tất trong phạm vi vài phần trăm giây.
 - **Tương quan tốc độ (Encrypt vs Decrypt):** Bằng việc sử dụng lớp `Stopwatch` đo thời gian (Ticks/Milliseconds), số liệu thu được cho thấy thời gian dùng để biến đổi bản rõ thành bản mã và thời gian khôi phục bản gốc là xấp xỉ nhau, độ trễ gần như không đáng kể. 
 - **Bảo toàn dữ liệu tuyệt đối:** Quá trình quét và so sánh từng byte (Byte-by-byte comparison) giữa tệp nguồn ban đầu và tệp sau khi đã giải mã trả về kết quả **KHỚP HOÀN TOÀN**. Không có bất kỳ sự hao hụt hay sai lệch bit nào xảy ra trong suốt tiến trình mã hóa.
 
-> **📷 Minh chứng kết quả chạy thực tế - Bài 1:**
+> ** Minh chứng kết quả chạy thực tế - Bài 1:**
 > 
 > <img width="1920" height="1080" alt="Ảnh chụp màn hình 2026-10-26 132622" src="https://github.com/user-attachments/assets/9d7dec76-3470-422f-8e61-eb2be8d9bd30" />
 
@@ -33,22 +33,22 @@ Trong phần này, hệ thống sử dụng thuật toán AES với khóa đối
 
 Phần này áp dụng chuẩn mã hóa bất đối xứng RSA (Khóa 2048-bit), nơi mã hóa và giải mã sử dụng hai khóa khác nhau (Public Key & Private Key). Khóa được lưu trữ và truy xuất thông qua định dạng cấu trúc chuẩn PEM.
 
-### 📈 1. Đánh giá Tốc độ thuật toán RSA:
+###  1. Đánh giá Tốc độ thuật toán RSA:
 - **Tốc độ Mã hóa (Sử dụng Public Key):** Thời gian thực thi rất ngắn gọn. Khóa công khai sở hữu thành phần số mũ công khai $e$ thường được gán mặc định là giá trị $65537$ (nhị phân chỉ gồm hai bit 1). Do $e$ nhỏ, phép toán lũy thừa module $C = M^e \bmod n$ được thực hiện cực nhanh.
 - **Tốc độ Giải mã (Sử dụng Private Key):** Thời gian xử lý chậm hơn rất nhiều so với lúc mã hóa. Khóa bí mật phụ thuộc vào thành phần $d$ (được tính bằng hàm số Euler, $d \equiv e^{-1} \pmod{\phi(n)}$). $d$ là một số nguyên vô cùng lớn, kéo theo số vòng lặp để thực hiện phép giải mã $M = C^d \bmod n$ tăng vọt, tiêu tốn rất nhiều chu kỳ CPU.
 
-### 🔍 2. Tính chất của Hàm băm (Hash) SHA-256:
+###  2. Tính chất của Hàm băm (Hash) SHA-256:
 Chương trình tiến hành băm 2 chuỗi kiểm thử là `"Data123"` và `"Data124"`. 
 - **Kết luận thu được:** Đầu vào dù chỉ bị thay đổi một lượng cực kỳ nhỏ (**duy nhất 1 ký tự cuối**), mã băm ngõ ra vẫn biến đổi hoàn toàn thành một chuỗi Hexadecimal xa lạ, không hề có quy luật liên quan tới mã ban đầu. Điều này minh chứng cực kỳ sắc nét cho **Hiệu ứng tuyết lở (Avalanche Effect)** - đặc tính bắt buộc phải có để tạo ra hàm băm mật mã an toàn, chống lại sự suy luận cấu trúc chuỗi ban đầu.
 
 ---
 
-### 💡 3. ĐỀ XUẤT GIẢI PHÁP: Kỹ thuật Chữ ký số động cho dữ liệu cố định
+###  3. ĐỀ XUẤT GIẢI PHÁP: Kỹ thuật Chữ ký số động cho dữ liệu cố định
 
-**🔴 Câu hỏi tình huống:**  
+** Câu hỏi tình huống:**  
 Mong muốn đưa ra là: *Cùng một dữ liệu*, *cùng một người ký* (nghĩa là sử dụng chung một Private Key), thì làm thế nào để chữ ký số sinh ra **BẮT BUỘC PHẢI KHÁC NHAU** trong mỗi lần ký thực thi, nhưng bên nhận vẫn phải Verify (xác thực) thành công?
 
-**🟢 Phương pháp giải quyết:**  
+** Phương pháp giải quyết:**  
 Sử dụng tiêu chuẩn đệm **RSA-PSS (Probabilistic Signature Scheme)** để thay thế cho cơ chế mã hóa xác định cũ (PKCS#1 v1.5). 
 
 **Cơ chế cốt lõi của giải pháp:**
@@ -58,7 +58,7 @@ Sử dụng tiêu chuẩn đệm **RSA-PSS (Probabilistic Signature Scheme)** đ
 4. **Xác minh (Verify):** Mặc dù chữ ký liên tục thay đổi hình thái, nhưng do cấu trúc PSS đã được tiêu chuẩn hóa, Public Key của người nhận vẫn có khả năng trích xuất ngược chuỗi Salt và đối chiếu chính xác với mã băm ban đầu.  
 => Cơ chế này tăng tính bảo mật lên nhiều lần, ngăn chặn tuyệt đối các cuộc tấn công suy diễn phân tích chữ ký hoặc phát lại (Replay Attacks).
 
-> **📷 Minh chứng kết quả (Tốc độ RSA, Hiệu ứng SHA256 và Chữ ký PSS):**
+> ** Minh chứng kết quả (Tốc độ RSA, Hiệu ứng SHA256 và Chữ ký PSS):**
 > 
 > <img width="1920" height="1080" alt="Ảnh chụp màn hình 2026-10-26 132346" src="https://github.com/user-attachments/assets/64b15765-c488-44c1-b295-8c7be79d6e9b" />
 

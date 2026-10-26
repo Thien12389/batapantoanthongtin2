@@ -113,7 +113,7 @@ Thực hiện băm hai chuỗi dữ liệu đầu vào chỉ khác biệt duy nh
 
 ---
 
-## 🏁 KẾT LUẬN TỔNG QUAN DỰ ÁN
+## KẾT LUẬN TỔNG QUAN DỰ ÁN
 
 Chương trình Console Application cùng báo cáo kỹ thuật đã đáp ứng **100% các yêu cầu bài tập lớn** môn An Toàn và Bảo Mật Thông Tin:
 

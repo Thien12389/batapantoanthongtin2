@@ -64,4 +64,22 @@ Sử dụng tiêu chuẩn đệm **RSA-PSS (Probabilistic Signature Scheme)** đ
 
 
 ---
+---
+
+## KẾT LUẬN TỔNG QUAN DỰ ÁN
+
+Báo cáo và chương trình Console Application đã hoàn thành **100% các yêu cầu kỹ thuật** của bài tập lớn An Toàn và Bảo Mật Thông Tin với các kết quả thực nghiệm nổi bật:
+
+1. **Hệ mật mã đối xứng (AES-256):** 
+   * Áp dụng thành công cơ chế đọc/ghi luồng (`CryptoStream`) giúp mã hóa/giải mã các tệp tin dung lượng lớn với tốc độ cao (~270 – 480 MB/s) mà không gây tràn bộ nhớ RAM. 
+   * Tiến trình giải mã khôi phục chính xác **100% từng byte** so với dữ liệu nguồn ban đầu.
+
+2. **Hệ mật mã bất đối xứng (RSA-2048) & SHA-256:**
+   * **Tốc độ:** Thực nghiệm chứng minh thao tác với Khóa công khai (Public Key - $e=65537$) diễn ra cực nhanh, trong khi thao tác với Khóa bí mật (Private Key - $d$ lớn) tốn nhiều chu kỳ CPU hơn rõ rệt.
+   * **Tính chất Hàm băm:** SHA-256 thể hiện rõ nét **Hiệu ứng tuyết lở (Avalanche Effect)** khi thay đổi duy nhất 1 ký tự đầu vào làm biến đổi **52.7% số bit** của mã băm ngõ ra (đạt chuẩn lý thuyết $\approx 50\%$).
+
+3. **Chữ ký số động (RSA-PSS):**
+   * Giải quyết triệt để yêu cầu tình huống bằng chuẩn đệm **RSA-PSS**. Nhờ cơ chế tự động nhúng bit nhiễu ngẫu nhiên (**Salt**), chương trình tạo ra các chuỗi chữ ký hoàn toàn khác nhau cho mỗi lần ký trên cùng một dữ liệu tĩnh, ngăn chặn triệt để tấn công phát lại (Replay Attacks) mà bên nhận vẫn Verify thành công bằng Public Key.
+
+> **Tóm lại:** Dự án không chỉ đáp ứng chuẩn xác các thuật toán mật mã tiêu chuẩn trong .NET (`System.Security.Cryptography`) mà còn đưa ra các đánh giá thực nghiệm minh bạch, có số liệu đo đạc và hình ảnh minh chứng cụ thể.
 *Báo cáo được hoàn thiện nhằm mục đích minh chứng bài tập môn An Toàn & Bảo Mật Thông Tin.*

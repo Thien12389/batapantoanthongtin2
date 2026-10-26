@@ -39,10 +39,10 @@
 - **Mã hóa văn bản rõ:** `"Xin chao K59KMT - An toan bao mat thong tin"`
   - `Kết quả Mã hóa (Base64)`: `FyKr3bwyaX+S8yTA2mmD0BLrVpnp66W+oV5+S2ThSCU+tNskDIhj3lIXTYkVMGM5`
   - `Kết quả Giải mã`: Khôi phục chính xác $100\%$ văn bản gốc.
-- **Thử nghiệm Tệp tin dung lượng lớn ($1024\text{ MB} / 1\text{ GB}$):**
-  - **Thời gian Mã hóa:** $\approx 185\text{ ms}$ (Tốc độ: $\approx 269.6\text{ MB/s}$)
-  - **Thời gian Giải mã:** $\approx 95\text{ ms}$ (Tốc độ: $\approx 521.7\text{ MB/s}$)
-  - **So sánh Byte (Byte-by-byte comparison):** Quét đối chiếu từng byte giữa file nguồn gốc $1\text{ GB}$ và file thu được sau giải mã $\rightarrow$ Kết quả: **KHÓP HOÀN TOÀN (100%)**.
+- **Thử nghiệm Tệp tin dung lượng lớn (1024 MB / 1 GB):**
+  - **Thời gian Mã hóa:** 36543 ms (Tốc độ: 28,0 MB/s)
+  - **Thời gian Giải mã:** 9901 ms (Tốc độ: 103,4 MB/s)
+  - **So sánh Byte (Byte-by-byte comparison):** Quét đối chiếu từng byte giữa file nguồn gốc 1 GB và file thu được sau giải mã -> Kết quả: **KHÓP HOÀN TOÀN (100%)**.
 
 ### 3. Đánh giá và Nhận xét
 - **Bảo toàn dữ liệu:** Tiến trình mã hóa và giải mã bảo toàn tính toàn vẹn tuyệt đối của tệp tin, không thất thoát bất kỳ bit dữ liệu nào.
@@ -51,7 +51,8 @@
 
 > **Minh chứng chạy thực tế - Bài 1:**
 >
-> <img width="1920" height="1080" alt="Ảnh chụp màn hình 2026-10-26 173736" src="https://github.com/user-attachments/assets/20519f33-9030-434b-88fb-fe00d8040cdf" />
+> <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e4cc2ee4-0dcb-436e-b447-d0206d2c10ab" />
+
 
 
 ---
